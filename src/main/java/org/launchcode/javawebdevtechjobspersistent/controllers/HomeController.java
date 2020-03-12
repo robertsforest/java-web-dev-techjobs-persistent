@@ -2,6 +2,7 @@ package org.launchcode.javawebdevtechjobspersistent.controllers;
 
 import org.launchcode.javawebdevtechjobspersistent.models.Employer;
 import org.launchcode.javawebdevtechjobspersistent.models.Job;
+import org.launchcode.javawebdevtechjobspersistent.models.Skill;
 import org.launchcode.javawebdevtechjobspersistent.models.data.EmployerRepository;
 import org.launchcode.javawebdevtechjobspersistent.models.data.JobRepository;
 import org.launchcode.javawebdevtechjobspersistent.models.data.SkillRepository;
@@ -48,7 +49,7 @@ public class HomeController {
 
     @PostMapping("add")
     public String processAddJobForm(@ModelAttribute @Valid Job newJob,
-                                       Errors errors, Model model, @RequestParam int employerId, @RequestParam(required=false) List<Integer> skills) {
+                                       Errors errors, Model model, @RequestParam int employerId, @RequestParam(required = false) List<Integer> skills) {
 
         if (errors.hasErrors()) {
             model.addAttribute("title", "Add Job");
@@ -60,8 +61,16 @@ public class HomeController {
         Optional optEmployer = employerRepository.findById(employerId);
         if(optEmployer.isPresent()){
             newJob.setEmployer((Employer) optEmployer.get());
-            jobRepository.save(newJob);
+        } else {
+//          Not sure how the employer ID could be invalid, but if invalid return to add page.
+            return "add";
         }
+
+//        List<Skill> skillObjs = (List<Skill>) skillRepository.findAllById(skills);
+//        This line was provided but isn't necessary?
+//        newJob.setSkills(skillObjs);
+        jobRepository.save(newJob);
+
         return "redirect:";
     }
 
